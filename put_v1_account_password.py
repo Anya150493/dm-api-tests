@@ -30,4 +30,3 @@ def put_v1_account_password():
     )
     return response
 
-    print(response.text)

@@ -21,4 +21,3 @@ def delete_v1_account_login_all():
     )
     return response
 
-    print(response.text)

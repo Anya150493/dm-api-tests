@@ -21,4 +21,4 @@ def get_v1_account():
     )
     return response
 
-    print(response.text)
+
