@@ -19,5 +19,6 @@ def delete_v1_account_login_all():
         url=url,
         headers=headers
     )
+    return response
 
     print(response.text)

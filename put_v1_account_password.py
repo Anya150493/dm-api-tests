@@ -28,5 +28,6 @@ def put_v1_account_password():
         headers=headers,
         json=payload
     )
+    return response
 
     print(response.text)
