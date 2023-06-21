@@ -1,12 +1,15 @@
 import requests
 from requests import Response
 from ..models.registration_model import RegistrationModel
-from ..models.reset_password_model import reset_password_model
-from ..models.change_email_model import change_email_model
-from ..models.change_password_model import change_password_model
+from ..models.reset_password_model import ResetPassword
+from ..models.change_email_model import ChangeEmailModel
+from ..models.change_password_model import ChangePasswordModel
 from requests import session
 from restclient.restClient import Restclient
 from dm_api_account.models.user_envelope_model import UserEnvelopeModel
+from dm_api_account.models.user_details_envelope_model import UserDetailsEnvelopeModel
+from dm_api_account.models.bad_request_error_model import BadRequestErrorModel
+from dm_api_account.models.general_error_model import GeneralErrorModel
 
 
 class AccountApi:
@@ -27,9 +30,10 @@ class AccountApi:
             json=json.dict(by_alias=True, exclude_none=True),
             **kwargs
         )
+        BadRequestErrorModel(**response.json())
         return response
 
-    def post_v1_account_password(self, json: reset_password_model, **kwargs) -> Response:
+    def post_v1_account_password(self, json: ResetPassword, **kwargs) -> Response:
         """
         Reset registered user password
         :param json reset_password_model
@@ -37,12 +41,13 @@ class AccountApi:
         """
         response = self.client.post(
             path=f"/v1/account/password",
-            json=json,
+            json=json.dict(by_alias=True, exclude_none=True),
             **kwargs
         )
+        UserEnvelopeModel(**response.json())
         return response
 
-    def put_v1_account_email(self, json: change_email_model, **kwargs) -> Response:
+    def put_v1_account_email(self, json: ChangeEmailModel, **kwargs) -> Response:
         """
         Change registered user email
         :param json change_email_model
@@ -50,12 +55,13 @@ class AccountApi:
         """
         response = self.client.put(
             path=f"/v1/account/email",
-            json=json,
+            json=json. dict(by_alias=True, exclude_none=True),
             **kwargs
         )
+        UserEnvelopeModel(**response.json())
         return response
 
-    def put_v1_account_password(self, json: change_password_model, **kwargs) -> Response:
+    def put_v1_account_password(self, json: ChangePasswordModel, **kwargs) -> Response:
         """
         Change registered user password
         :param json change_password_model
@@ -63,9 +69,10 @@ class AccountApi:
         """
         response = self.client.put(
             path=f"/v1/account/password",
-            json=json,
+            json=json.dict(by_alias=True, exclude_none=True),
             **kwargs
         )
+        UserEnvelopeModel(**response.json())
         return response
 
     def put_v1_account_token(self, token: str, **kwargs) -> Response:
@@ -79,6 +86,7 @@ class AccountApi:
             **kwargs
         )
         UserEnvelopeModel(**response.json())
+        GeneralErrorModel(**response.json())
         return response
 
     def get_v1_account(self, **kwargs) -> Response:
@@ -90,4 +98,5 @@ class AccountApi:
             path=f"/v1/account",
             **kwargs
         )
+        UserDetailsEnvelopeModel(**response.json())
         return response

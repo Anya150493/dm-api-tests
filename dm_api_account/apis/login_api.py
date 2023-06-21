@@ -1,6 +1,8 @@
 import requests
 from requests import Response
-from ..models.login_credentials_model import login_credentials_model
+from ..models.login_credentials_model import LoginCredentialsModel
+from ..models.general_error_model import GeneralErrorModel
+from dm_api_account.models.user_envelope_model import UserEnvelopeModel
 from requests import session
 
 
@@ -11,7 +13,7 @@ class LoginApi:
         if headers:
             self.session.headers.update(headers)
 
-    def post_v1_account_login(self, json: login_credentials_model, **kwargs) -> Response:
+    def post_v1_account_login(self, json: LoginCredentialsModel, **kwargs) -> Response:
         """
         Authenticate via credentials
         :param json login_credentials_model
@@ -19,9 +21,10 @@ class LoginApi:
         """
         response = self.session.post(
             url=f"{self.host}/v1/account/login",
-            json=json,
+            json=json.dict(by_alias=True, exclude_none=True),
             **kwargs
         )
+        UserEnvelopeModel(**response.json())
         return response
 
     def delete_v1_account_login(self, **kwargs) -> Response:
@@ -33,6 +36,7 @@ class LoginApi:
             url=f"{self.host}/v1/account/login",
             **kwargs
         )
+        GeneralErrorModel(**response.json())
         return response
 
     def delete_v1_account_login_all(self, **kwargs) -> Response:
@@ -44,4 +48,5 @@ class LoginApi:
             url=f"{self.host}/v1/account/login/all",
             **kwargs
         )
+        GeneralErrorModel(**response.json())
         return response
