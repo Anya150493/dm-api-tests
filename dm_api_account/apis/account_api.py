@@ -6,10 +6,10 @@ from ..models.change_email_model import ChangeEmailModel
 from ..models.change_password_model import ChangePasswordModel
 from requests import session
 from restclient.restClient import Restclient
-from dm_api_account.models.user_envelope_model import UserEnvelopeModel
-from dm_api_account.models.user_details_envelope_model import UserDetailsEnvelopeModel
-from dm_api_account.models.bad_request_error_model import BadRequestErrorModel
-from dm_api_account.models.general_error_model import GeneralErrorModel
+from ..models.user_envelope_model import UserEnvelopeModel
+from ..models.user_details_envelope_model import UserDetailsEnvelopeModel
+from ..models.bad_request_error_model import BadRequestErrorModel
+
 
 
 class AccountApi:
@@ -55,7 +55,7 @@ class AccountApi:
         """
         response = self.client.put(
             path=f"/v1/account/email",
-            json=json. dict(by_alias=True, exclude_none=True),
+            json=json.dict(by_alias=True, exclude_none=True),
             **kwargs
         )
         UserEnvelopeModel(**response.json())
@@ -86,7 +86,6 @@ class AccountApi:
             **kwargs
         )
         UserEnvelopeModel(**response.json())
-        GeneralErrorModel(**response.json())
         return response
 
     def get_v1_account(self, **kwargs) -> Response:

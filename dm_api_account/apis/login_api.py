@@ -1,8 +1,7 @@
 import requests
 from requests import Response
 from ..models.login_credentials_model import LoginCredentialsModel
-from ..models.general_error_model import GeneralErrorModel
-from dm_api_account.models.user_envelope_model import UserEnvelopeModel
+from ..models.user_envelope_model import UserEnvelopeModel
 from requests import session
 
 
@@ -36,7 +35,6 @@ class LoginApi:
             url=f"{self.host}/v1/account/login",
             **kwargs
         )
-        GeneralErrorModel(**response.json())
         return response
 
     def delete_v1_account_login_all(self, **kwargs) -> Response:
@@ -48,5 +46,4 @@ class LoginApi:
             url=f"{self.host}/v1/account/login/all",
             **kwargs
         )
-        GeneralErrorModel(**response.json())
         return response
