@@ -1,8 +1,7 @@
-import requests
 from requests import Response
-from ..models.login_credentials_model import LoginCredentialsModel
-from ..models.user_envelope_model import UserEnvelopeModel
+from ..models import *
 from requests import session
+from utilities import validate_request_json, validate_status_code
 
 
 class LoginApi:
@@ -12,18 +11,21 @@ class LoginApi:
         if headers:
             self.session.headers.update(headers)
 
-    def post_v1_account_login(self, json: LoginCredentialsModel, **kwargs) -> Response:
+    def post_v1_account_login(self, json: LoginCredentials, status_code: int, **kwargs) -> Response | UserEnvelope:
         """
         Authenticate via credentials
+        :param status_code:
         :param json login_credentials_model
         :return:
         """
         response = self.session.post(
             url=f"{self.host}/v1/account/login",
-            json=json.dict(by_alias=True, exclude_none=True),
+            json=validate_request_json(json),
             **kwargs
         )
-        UserEnvelopeModel(**response.json())
+        validate_status_code(response, status_code)
+        if response.status_code == 200:
+            return UserEnvelope(**response.json())
         return response
 
     def delete_v1_account_login(self, **kwargs) -> Response:
