@@ -1,5 +1,5 @@
 import structlog
-from services.dm_api_account import DmApiAccount
+from services.dm_api_account import Facade
 from dm_api_account.models.user_envelope_model import UserRole
 import json
 from hamcrest import assert_that, has_properties
@@ -12,8 +12,8 @@ structlog.configure(
 
 
 def test_put_v1_account_token():
-    api = DmApiAccount(host='http://localhost:5051')
-    response = api.account.put_v1_account_token(token='64ab6f09-4f00-409a-8935-27d5c27fc114', status_code=200)
+    api = Facade(host='http://localhost:5051')
+    response = api.account_api.put_v1_account_token(token='64ab6f09-4f00-409a-8935-27d5c27fc114', status_code=200)
     assert_that(response.resource, has_properties(
         {
             "login": "login_36",
