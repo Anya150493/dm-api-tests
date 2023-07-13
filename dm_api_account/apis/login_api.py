@@ -1,31 +1,31 @@
 from requests import Response
+from restclient.restClient import Restclient
 from ..models import *
-from requests import session
 from utilities import validate_request_json, validate_status_code
 
 
 class LoginApi:
     def __init__(self, host, headers=None):
         self.host = host
-        self.session = session()
+        self.client = Restclient(host=host, headers=headers)
         if headers:
-            self.session.headers.update(headers)
+            self.client.session.headers.update(headers)
 
-    def post_v1_account_login(self, json: LoginCredentials, status_code: int, **kwargs) -> Response | UserEnvelope:
+    def post_v1_account_login(self, json: LoginCredentials, status_code: int = 200) -> Response:
         """
         Authenticate via credentials
         :param status_code:
-        :param json login_credentials_model
+        :param json: login_credentials_model
         :return:
         """
-        response = self.session.post(
-            url=f"{self.host}/v1/account/login",
-            json=validate_request_json(json),
-            **kwargs
+
+        response = self.client.post(
+            path=f"/v1/account/login",
+            json=validate_request_json(json)
         )
         validate_status_code(response, status_code)
         if response.status_code == 200:
-            return UserEnvelope(**response.json())
+            UserEnvelope(**response.json())
         return response
 
     def delete_v1_account_login(self, **kwargs) -> Response:
@@ -33,7 +33,7 @@ class LoginApi:
         Logout as current user
         :return:
         """
-        response = self.session.delete(
+        response = self.client.delete(
             url=f"{self.host}/v1/account/login",
             **kwargs
         )
@@ -44,7 +44,7 @@ class LoginApi:
          Logout from every device
         :return:
         """
-        response = self.session.delete(
+        response = self.client.delete(
             url=f"{self.host}/v1/account/login/all",
             **kwargs
         )
