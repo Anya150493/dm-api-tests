@@ -9,7 +9,7 @@ class Login:
         self.facade.login_api.client.session.headers.update(headers)
 
     def login_user(self, login: str, password: str, remember_me: bool = True):
-        response = self.facade.login.post_v1_account_login(
+        response = self.facade.login_api.post_v1_account_login(
             json=LoginCredentials(
                 login=login,
                 password=password,
