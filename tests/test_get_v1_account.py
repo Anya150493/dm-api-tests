@@ -11,7 +11,7 @@ structlog.configure(
 
 def test_get_v1_account():
     api = Facade(host='http://localhost:5051')
-    token = api.login.get_auth_token(login='login_58', password='login_58')
+    token = api.login.get_auth_token(login='login_59', password='login_59')
     api.account.set_headers(headers=token)
     api.login.set_headers(headers=token)
     api.account.get_current_user_info()

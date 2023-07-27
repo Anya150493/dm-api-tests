@@ -1,3 +1,5 @@
+import time
+
 from services.dm_api_account import Facade
 import structlog
 
@@ -11,9 +13,9 @@ structlog.configure(
 def test_post_v1_account():
     api = Facade(host='http://localhost:5051')
 
-    login = "login_59"
-    email = "login_59@mail.ru"
-    password = "login_59"
+    login = "login_63"
+    email = "login_63@mail.ru"
+    password = "login_63"
 
     response = api.account.register_new_user(
         login=login,
@@ -25,4 +27,7 @@ def test_post_v1_account():
         login=login,
         password=password
     )
+    token = api.login.get_auth_token(login='login_63', password='login_63')
+    time.sleep(3)
     #logout
+    api.login_api.delete_v1_account_login(headers=token)
