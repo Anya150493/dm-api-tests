@@ -1,4 +1,6 @@
 import structlog
+
+from generic.helpers.dm_db import DmDatabase
 from services.dm_api_account import Facade
 from dm_api_account.models.user_envelope_model import UserRole
 import json
@@ -13,27 +15,33 @@ structlog.configure(
 
 def test_put_v1_account_token():
     api = Facade(host='http://localhost:5051')
-    response = api.account_api.put_v1_account_token(token='64ab6f09-4f00-409a-8935-27d5c27fc114', status_code=200)
-    assert_that(response.resource, has_properties(
-        {
-            "login": "login_36",
-            "roles": [UserRole.guest, UserRole.player]
-        }
-    ))
 
-    # expected_json = {'resourse': {
-    #     "login": "login36",
-    #     "rating": {
-    #         "quantity": 0
-    #     },
-    #     "roles": [
-    #         "Guest",
-    #         "Player"
-    #     ]
-    # }}
-    # actual_json = json.loads(response.json(by_alias=True, exclude_none=True))
-    # assert actual_json==expected_json
-    # print(response)
-    # print(response.resource)
-    # print(response.resource.login)
-    # print(response.resource.roles)
+    login = "login_70"
+    email = "login_70@mail.ru"
+    password = "login_70"
+
+    db = DmDatabase(user='postgres', password='admin', host='localhost', database='dm3.5')
+    db.delete_user_by_login(login=login)
+    dataset = db.get_user_by_login(login=login)
+    assert len(dataset) == 0
+
+    api.mailhog.delete_all_messages()
+
+    response = api.account.register_new_user(
+        login=login,
+        email=email,
+        password=password
+    )
+
+    dataset = db.get_user_by_login(login=login)
+    for row in dataset:
+        assert row['Login'] == login, f'User {login} not registered'
+        assert row['Activated'] is False, f'User {login} was not activated'
+
+    db.activate_user_by_db(login=login)
+    dataset = db.get_user_by_login(login=login)
+    for row in dataset:
+        assert row['Activated'] is True, f'User {login} was activated'
+
+
+

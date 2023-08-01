@@ -1,5 +1,5 @@
 import time
-
+from generic.helpers.dm_db import DmDatabase
 from services.dm_api_account import Facade
 import structlog
 
@@ -13,21 +13,35 @@ structlog.configure(
 def test_post_v1_account():
     api = Facade(host='http://localhost:5051')
 
-    login = "login_63"
-    email = "login_63@mail.ru"
-    password = "login_63"
+    login = "login_70"
+    email = "login_70@mail.ru"
+    password = "login_70"
+
+    db = DmDatabase(user='postgres', password='admin', host='localhost', database='dm3.5')
+    db.delete_user_by_login(login=login)
+    dataset = db.get_user_by_login(login=login)
+    assert len(dataset) == 0
+
+    api.mailhog.delete_all_messages()
 
     response = api.account.register_new_user(
         login=login,
         email=email,
         password=password
     )
+
+    dataset = db.get_user_by_login(login=login)
+    for row in dataset:
+        assert row['Login'] == login, f'User {login} not registered'
+        assert row['Activated'] is False, f'User {login} was activated'
+
     api.account.activate_registered_user(login=login)
+
+    time.sleep(2)
+    dataset = db.get_user_by_login(login=login)
+    for row in dataset:
+        assert row['Activated'] is True, f'User {login} not activated'
     api.login.login_user(
         login=login,
         password=password
     )
-    token = api.login.get_auth_token(login='login_63', password='login_63')
-    time.sleep(3)
-    #logout
-    api.login_api.delete_v1_account_login(headers=token)
